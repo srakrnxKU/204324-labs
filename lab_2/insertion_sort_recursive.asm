@@ -88,7 +88,7 @@ insertion_sort:
 		add		$s5, $s0, $s4	# $s5 = array[j]
 		lw		$s5, 0($s5)
 		slt		$s6, $s2, $s5	# $s6 = last < array[j]
-		slti	$s7, $s3, 0		# $s7 = (j >= 0) ? 0 : 1
+        slti	$s7, $s3, 0		# $s7 = (j >= 0) ? 0 : 1
 		not		$s7, $s7		# inverting $s7 ($s7 = (j >= 0) ? 1 : 0)
 		andi	$s7, $s7, 1		# masking $s7 with 0x1 (for 1 bit result)
 		and		$s6, $s6, $s7	# $s6 = (j >= 0 && arr[j] > last)
