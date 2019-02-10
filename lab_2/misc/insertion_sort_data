@@ -1,0 +1,36 @@
+	addiu   $sp, $sp, -4
+    li      $t0, 21544
+	sw  	$t0, 0($sp)
+	addiu   $sp, $sp, -4
+    li      $t0, 236
+	sw  	$t0, 0($sp)
+	addiu   $sp, $sp, -4
+    li      $t0, 327
+	sw  	$t0, 0($sp)
+	addiu   $sp, $sp, -4
+    li      $t0, 236
+	sw  	$t0, 0($sp)
+	addiu   $sp, $sp, -4
+    li      $t0, 66
+	sw  	$t0, 0($sp)
+	addiu   $sp, $sp, -4
+    li      $t0, 2
+	sw  	$t0, 0($sp)
+	addiu   $sp, $sp, -4
+    li      $t0, 244
+	sw  	$t0, 0($sp)
+	addiu   $sp, $sp, -4
+    li      $t0, 80324542
+	sw  	$t0, 0($sp)
+	addiu   $sp, $sp, -4
+    li      $t0, 93245
+	sw  	$t0, 0($sp)
+	addiu   $sp, $sp, -4
+    li      $t0, 73245
+	sw  	$t0, 0($sp)
+	addiu   $sp, $sp, -4
+    li      $t0, 324545
+	sw  	$t0, 0($sp)
+	addiu   $sp, $sp, -4
+    li      $t0, 132470
+	sw  	$t0, 0($sp)
