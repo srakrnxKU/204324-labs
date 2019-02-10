@@ -49,20 +49,10 @@ main:
 	sw  	$t0, 0($sp)
 	add	$s0, $sp, $0   # Storing the address to the first array element
 	li      $s1, 12
+	jal	array_print
 	jal     insertion_sort
+	jal	array_print
 	li	$t0, 0
-	array_print:
-		slti	$t1, $t0, 11
-		li	$v0, 1
-		sll	$t2, $t0, 2
-		add	$t2, $t2, $s0
-		lw	$a0, 0($t2)
-		syscall
-		li	$v0, 11
-		li	$a0, 10
-		syscall
-		addi	$t0, $t0, 1
-		bne	$t1, $0, array_print
 	li	$v0, 10
 	syscall
 
@@ -114,3 +104,19 @@ insertion_sort:
 		addiu	$sp, $sp, 4
 		jr      $ra             # jr to return
 	
+
+array_print:
+	add	$t0, $0, $0
+	array_print_loop:
+		slti	$t1, $t0, 11
+		sll	$t2, $t0, 2
+		add	$t2, $t2, $s0
+		lw	$a0, 0($t2)
+		li	$v0, 1
+		syscall
+		li	$v0, 11
+		li	$a0, 10
+		syscall
+		addi	$t0, $t0, 1
+		bne	$t1, $0, array_print_loop
+		jr      $ra             # jr to return
