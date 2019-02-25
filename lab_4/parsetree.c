@@ -18,6 +18,46 @@ enum
     illegal // 9
 };
 
+// Node structure
+typedef struct NodeDesc *Node;
+typedef struct NodeDesc
+{
+    char kind;        // plus, minus, times, divide, number
+    int val;          // number: value
+    Node left, right; // plus, minus, times, divide: children
+} NodeDesc;
+
+static void Print(Node root, int level)
+{
+    register int i;
+
+    if (root != NULL)
+    {
+        Print(root->right, level + 1);
+        for (i = 0; i < level; i++)
+            printf(" ");
+        switch (root->kind)
+        {
+        case plus:
+            printf("+\n");
+            break;
+        case minus:
+            printf("-\n");
+            break;
+        case times:
+            printf("*\n");
+            break;
+        case divide:
+            printf("/\n");
+            break;
+        case number:
+            printf("%ld\n", root->val);
+            break;
+        }
+        Print(root->left, level + 1);
+    }
+}
+
 // Initialise filesystem read,
 // the file object are stored at global variable f.
 static void SInit(char *filename)
