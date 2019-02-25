@@ -1,3 +1,8 @@
+/*
+    PARSE TREE PROGRAMME FOR LAB 3
+    Sirakorn Lamyai         5910500023
+    Korrawit Chaikangwan    5910501909
+*/
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
