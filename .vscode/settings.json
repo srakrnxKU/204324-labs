@@ -1,0 +1,6 @@
+{
+    "python.formatting.provider": "black",
+    "C_Cpp.errorSquiggles": "Enabled",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
+}
