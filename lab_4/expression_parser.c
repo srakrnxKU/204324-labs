@@ -88,6 +88,7 @@ static int SGet()
     default:
         sym = illegal;
     }
+    printf("%d ", sym);
     return sym;
 }
 static int sym;
