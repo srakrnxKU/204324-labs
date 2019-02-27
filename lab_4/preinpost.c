@@ -32,36 +32,65 @@ typedef struct NodeDesc
     Node left, right; // plus, minus, times, divide: children
 } NodeDesc;
 
-// Print Tree
-static void Print(Node root, int level)
+static void PrintNode(Node node)
 {
-    register int i;
-
-    if (root != NULL)
+    switch (node->kind)
     {
-        Print(root->right, level + 1);
-        for (i = 0; i < level; i++)
-            printf(" ");
-        switch (root->kind)
-        {
-        case plus:
-            printf("+\n");
-            break;
-        case minus:
-            printf("-\n");
-            break;
-        case times:
-            printf("*\n");
-            break;
-        case divide:
-            printf("/\n");
-            break;
-        case number:
-            printf("%d\n", root->val);
-            break;
-        }
-        Print(root->left, level + 1);
+    case plus:
+        printf("+");
+        break;
+    case minus:
+        printf("-");
+        break;
+    case times:
+        printf("*");
+        break;
+    case divide:
+        printf("/");
+        break;
+    case number:
+        printf("%d", node->val);
+        break;
     }
+}
+
+static void PreOrder(Node n)
+{
+    PrintNode(n);
+    if (n->left != NULL)
+    {
+        PreOrder(n->left);
+    }
+    if (n->right != NULL)
+    {
+        PreOrder(n->right);
+    }
+}
+
+static void InOrder(Node n)
+{
+    if (n->left != NULL)
+    {
+        InOrder(n->left);
+    }
+    PrintNode(n);
+    if (n->right != NULL)
+    {
+        InOrder(n->right);
+    }
+}
+
+static void PostOrder(Node n)
+{
+    if (n->left != NULL)
+    {
+        PostOrder(n->left);
+    }
+    if (n->right != NULL)
+    {
+        PostOrder(n->right);
+    }
+    PrintNode(n);
 }
 
 // Initialise filesystem read,
@@ -274,7 +303,12 @@ int main(int argc, char *argv[])
         sym = SGet();
         result = Expr();
         assert(sym == eof);
-        Print(result, 0);
+        PreOrder(result);
+        printf(" ");
+        InOrder(result);
+        printf(" ");
+        PostOrder(result);
+        printf("\n");
     }
     else
     {
