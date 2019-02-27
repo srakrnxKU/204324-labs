@@ -32,6 +32,7 @@ typedef struct NodeDesc
     Node left, right; // plus, minus, times, divide: children
 } NodeDesc;
 
+// Print Tree
 static void Print(Node root, int level)
 {
     register int i;
@@ -151,15 +152,21 @@ static int SGet()
 static int sym;
 
 // Function prototype
-static int Expr();
+static Node Expr();
 
 // Factorisation (parenthesis)
 static int Factor()
 {
-    int result;
+    Node result;
     assert((sym == number) || (sym == lparen));
     if (sym == number)
     {
+        // Creating node value
+        result = malloc(sizeof(NodeDesc));
+        result->kind = number;
+        result->val = val;
+        result->left = NULL;
+        result->right = NULL;
         sym = SGet();
         return val;
     }
@@ -171,39 +178,60 @@ static int Factor()
         sym = SGet();
         return result;
     }
-    return 0;
+    return result;
 }
 
 // Termination character
-static int Term()
+static Node Term()
 {
-    int fa = Factor();
-    int fb;
+    Node result;
+    // Creating node value
+    result = malloc(sizeof(NodeDesc));
+    result->kind = sym = number;
+    result->val = Factor();
     while ((sym == times) || (sym == divide) || (sym == mod))
     {
         if (sym == times)
         {
+            Node newNode;
+            newNode = malloc(sizeof(NodeDesc));
+            newNode->kind = times;
+            newNode->left = result;
+            newNode->right = Factor();
+            result = newNode;
             sym = SGet();
-            fa *= Factor();
         }
         else if (sym == divide)
         {
+            Node newNode;
+            newNode = malloc(sizeof(NodeDesc));
+            newNode->kind = divide;
+            newNode->left = result;
+            newNode->right = Factor();
+            result = newNode;
             sym = SGet();
-            fa /= Factor();
         }
         else if (sym == mod)
         {
+            Node newNode;
+            newNode = malloc(sizeof(NodeDesc));
+            newNode->kind = mod;
+            newNode->left = result;
+            newNode->right = Factor();
+            result = newNode;
             sym = SGet();
-            fa %= Factor();
         }
     }
-    return fa;
+    return result;
 }
 
 // Expression (top form)
-static int Expr()
+static Node Expr()
 {
-    int ta;
+    Node result;
+    // Creating node value
+    result = malloc(sizeof(NodeDesc));
+    result = Term();
     // Unary operators
     /*
     if ((sym == minus) || (sym == plus))
@@ -211,28 +239,36 @@ static int Expr()
         sym = SGet();
     }
     */
-    ta = Term();
     while ((sym == plus) || (sym == minus))
     {
         if (sym == plus)
         {
+            Node newNode;
+            newNode = malloc(sizeof(NodeDesc));
+            newNode->kind = plus;
+            newNode->left = result;
+            newNode->right = Term();
+            result = newNode;
             sym = SGet();
-            ta += Term();
         }
         else if (sym == minus)
         {
+            Node newNode;
+            newNode = malloc(sizeof(NodeDesc));
+            newNode->kind = minus;
+            newNode->left = result;
+            newNode->right = Term();
+            result = newNode;
             sym = SGet();
-            ta -= Term();
         }
     }
-    return ta;
+    return result;
 }
 
 // Main function
 int main(int argc, char *argv[])
 {
-    register int result;
-
+    Node result;
     if (argc == 2)
     {
         // Initialise a filesystem read
@@ -240,7 +276,7 @@ int main(int argc, char *argv[])
         sym = SGet();
         result = Expr();
         assert(sym == eof);
-        printf("%d\n", result);
+        Print(result, 0);
     }
     else
     {
