@@ -111,6 +111,8 @@ static int Expr();
 // Factorisation (parenthesis)
 static int Factor()
 {
+    printf("Factor: ");
+    printf("Sym: %d\n", sym);
     int result;
     assert((sym == number) || (sym == lparen));
     if (sym == number)
@@ -132,8 +134,8 @@ static int Factor()
 // Termination character
 static int Term()
 {
+    printf("Term\n");
     int fa = Factor();
-    int fb;
     while ((sym == times) || (sym == divide) || (sym == mod))
     {
         if (sym == times)
@@ -158,6 +160,7 @@ static int Term()
 // Expression (top form)
 static int Expr()
 {
+    printf("Expr\n");
     int ta;
     // Unary operators
     /*
