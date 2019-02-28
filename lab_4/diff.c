@@ -33,6 +33,41 @@ typedef struct NodeDesc
     Node left, right; // plus, minus, times, divide: children
 } NodeDesc;
 
+// Print Tree
+static void PrintTree(Node root, int level)
+{
+    register int i;
+
+    if (root != NULL)
+    {
+        PrintTree(root->right, level + 1);
+        for (i = 0; i < level; i++)
+            printf(" ");
+        switch (root->kind)
+        {
+        case plus:
+            printf("+\n");
+            break;
+        case minus:
+            printf("-\n");
+            break;
+        case times:
+            printf("*\n");
+            break;
+        case divide:
+            printf("/\n");
+            break;
+        case number:
+            printf("%d\n", root->val);
+            break;
+        case var:
+            printf("%c", root->val);
+            break;
+        }
+        PrintTree(root->left, level + 1);
+    }
+}
+
 static void PrintNode(Node node)
 {
     switch (node->kind)
@@ -105,6 +140,7 @@ static Node diff(Node root)
     {
         // if root->kind is number set result->val: to 0
         // else set result->val to 1
+        result->kind = number;
         if (root->kind == number)
         {
             result->val = 0;
@@ -116,7 +152,6 @@ static Node diff(Node root)
         // set result->left and result->right to NULL;
         result->left = NULL;
         result->right = NULL;
-        return result;
     }
     else if ((root->kind == plus) || (root->kind == minus))
     {
@@ -415,7 +450,7 @@ static Node Expr()
 // Main function
 int main(int argc, char *argv[])
 {
-    Node result;
+    Node result, diffResult;
     if (argc == 2)
     {
         // Initialise a filesystem read
@@ -428,6 +463,9 @@ int main(int argc, char *argv[])
         InOrder(result);
         printf(" ");
         PostOrder(result);
+        printf("\n");
+        diffResult = diff(result);
+        InOrder(diffResult);
         printf("\n");
     }
     else
