@@ -458,12 +458,6 @@ int main(int argc, char *argv[])
         sym = SGet();
         result = Expr();
         assert(sym == eof);
-        PreOrder(result);
-        printf(" ");
-        InOrder(result);
-        printf(" ");
-        PostOrder(result);
-        printf("\n");
         diffResult = diff(result);
         InOrder(diffResult);
         printf("\n");
