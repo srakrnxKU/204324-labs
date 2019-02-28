@@ -19,8 +19,9 @@ enum
     lparen, // 5
     rparen, // 6
     number, // 7
-    eof,    // 8
-    illegal // 9
+    var,    // 8
+    eof,    // 9
+    illegal // 10
 };
 
 // Node structure
@@ -50,6 +51,9 @@ static void PrintNode(Node node)
         break;
     case number:
         printf("%d", node->val);
+        break;
+    case var:
+        printf("%c", node->val);
         break;
     }
 }
@@ -117,6 +121,7 @@ static void Number()
 
 // Reads and interprete the state of the lexical analysis.
 // After reading, the state is then returned.
+char varChar;
 static int SGet()
 {
     register int sym;
@@ -172,7 +177,16 @@ static int SGet()
         Number();
         break;
     default:
-        sym = illegal;
+        if (ch >= 65 && ch < 123)
+        {
+            varChar = (char)ch;
+            sym = var;
+            ch = getc(f);
+        }
+        else
+        {
+            sym = illegal;
+        }
     }
     return sym;
 }
@@ -187,13 +201,22 @@ static Node Expr();
 static Node Factor()
 {
     Node result;
-    assert((sym == number) || (sym == lparen));
+    assert((sym == number) || (sym == var) || (sym == lparen));
     if (sym == number)
     {
         // Creating node value
         result = malloc(sizeof(NodeDesc));
         result->kind = number;
         result->val = val;
+        result->left = NULL;
+        result->right = NULL;
+        sym = SGet();
+    }
+    else if (sym == var)
+    {
+        result = malloc(sizeof(NodeDesc));
+        result->kind = var;
+        result->val = varChar;
         result->left = NULL;
         result->right = NULL;
         sym = SGet();
