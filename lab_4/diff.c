@@ -134,13 +134,19 @@ static Node diff(Node root)
         result_left = malloc(sizeof(NodeDesc));
         result_right = malloc(sizeof(NodeDesc));
         // calculates uv'
+        Node u;
+        u = malloc(sizeof(NodeDesc));
+        u = root->left;
         result_left->kind = times;
-        result_left->left = root->left;
+        result_left->left = u;
         result_left->right = diff(root->right);
         // calculates u'v
+        Node v;
+        v = malloc(sizeof(NodeDesc));
+        v = root->right;
         result_right->kind = times;
         result_right->left = diff(root->left);
-        result_right->right = root->right;
+        result_right->right = v;
         // d(uv) = uv' + u'v, therefore the top node
         // will be the summation of the two nodes.
         result->kind = plus;
@@ -149,6 +155,40 @@ static Node diff(Node root)
     }
     else if (root->kind == divide)
     {
+        // shit load of nodes
+        Node u, v, vl, vr, timesLeft, timesRight, subtract, square;
+        // d(u/v) = ((u'v)+(uv'))/(v*v)
+        // we first create u'v and v'u
+        timesLeft = malloc(sizeof(NodeDesc));
+        timesLeft->kind = times;
+        timesLeft->left = diff(root->left);
+        v = malloc(sizeof(NodeDesc));
+        v = root->right;
+        timesLeft->right = u;
+        timesRight = malloc(sizeof(NodeDesc));
+        timesRight->kind = times;
+        u = malloc(sizeof(NodeDesc));
+        u = root->left;
+        timesRight->left = u;
+        timesRight->right = diff(root->right);
+        // we then create the subtract node
+        subtract = malloc(sizeof(NodeDesc));
+        subtract->kind = minus;
+        subtract->left = timesLeft;
+        subtract->right = timesRight;
+        // we also then create the v^2 node;
+        vl = malloc(sizeof(NodeDesc));
+        vl = root->right;
+        vr = malloc(sizeof(NodeDesc));
+        vr = root->right;
+        square = malloc(sizeof(NodeDesc));
+        square->kind = times;
+        square->left = vl;
+        square->right = vr;
+        // The summary node, finally
+        result->kind = divide;
+        result->left = subtract;
+        result->right = square;
     }
     // return result;
     return result;
