@@ -102,17 +102,31 @@ static Node diff(Node root)
     Node result;
     if ((root->kind == number) || (root->kind == var))
     {
-        create new “result” node if root->kind is number set result->value to 0 else set result->value to 1 set result->left and result->right to NULL;
+        // create new “result” node
+        result = malloc(sizeof(NodeDesc));
+        // if root->kind is number set result->val: to 0
+        // else set result->val to 1
+        if (root->kind == number)
+        {
+            result->val = 0;
+        }
+        else
+        {
+            result->val = 1;
+        }
+        // set result->left and result->right to NULL;
+        result->left = NULL;
+        result->right = NULL;
         return result;
     }
     else if ((root->kind == plus) || (root->kind == minus))
     {
-        create new “result” node
-                set root->kind to plus or
-            minus accordingly
-                set result->left to diff(root->left)
-                    set result->right to diff(root->right);
-        return result;
+    }
+    else if ((root->kind == times))
+    {
+    }
+    else if (root->kind == divide)
+    {
     }
 }
 
