@@ -100,10 +100,9 @@ static void PostOrder(Node n)
 static Node diff(Node root)
 {
     Node result;
+    result = malloc(sizeof(NodeDesc));
     if ((root->kind == number) || (root->kind == var))
     {
-        // create new “result” node
-        result = malloc(sizeof(NodeDesc));
         // if root->kind is number set result->val: to 0
         // else set result->val to 1
         if (root->kind == number)
@@ -121,13 +120,38 @@ static Node diff(Node root)
     }
     else if ((root->kind == plus) || (root->kind == minus))
     {
+        // set root->kind to plus or minus accordingly
+        result->kind = root->kind;
+        // set result->left to diff(root->left)
+        result->left = diff(root->left);
+        // set result->right to diff(root->right);
+        result->right = diff(root->right);
     }
     else if ((root->kind == times))
     {
+        // declare two more nodes
+        Node result_left, result_right;
+        result_left = malloc(sizeof(NodeDesc));
+        result_right = malloc(sizeof(NodeDesc));
+        // calculates uv'
+        result_left->kind = times;
+        result_left->left = root->left;
+        result_left->right = diff(root->right);
+        // calculates u'v
+        result_right->kind = times;
+        result_right->left = diff(root->left);
+        result_right->right = root->right;
+        // d(uv) = uv' + u'v, therefore the top node
+        // will be the summation of the two nodes.
+        result->kind = plus;
+        result->left = result_left;
+        result->right = result_right;
     }
     else if (root->kind == divide)
     {
     }
+    // return result;
+    return result;
 }
 
 // Initialise filesystem read,
