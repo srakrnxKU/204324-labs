@@ -465,13 +465,25 @@ int main(int argc, char *argv[])
         sym = SGet();
         result = Expr();
         assert(sym == eof);
+        // Pre-in-post
+        printf("====== EXPRESSION ======\n");
+        PreOrder(result);
+        printf("\n");
+        InOrder(result);
+        printf("\n");
+        PostOrder(result);
+        printf("\n");
+        printf("====== TREE ======\n");
+        Print(result, 0);
+        printf("====== DERIVED EXPRESSION ======\n");
         diffResult = diff(result);
         PreOrder(diffResult);
         printf("\n");
         InOrder(diffResult);
         printf("\n");
         PostOrder(diffResult);
-        printf("\n=============\n");
+        printf("\n");
+        printf("====== DERIVED TREE ======\n");
         Print(diffResult, 0);
     }
     else

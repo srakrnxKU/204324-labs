@@ -33,6 +33,40 @@ typedef struct NodeDesc
     Node left, right; // plus, minus, times, divide: children
 } NodeDesc;
 
+static void Print(Node root, int level)
+{
+    register int i;
+
+    if (root != NULL)
+    {
+        Print(root->right, level + 1);
+        for (i = 0; i < level; i++)
+            printf(" ");
+        switch (root->kind)
+        {
+        case plus:
+            printf("+\n");
+            break;
+        case minus:
+            printf("-\n");
+            break;
+        case times:
+            printf("*\n");
+            break;
+        case divide:
+            printf("/\n");
+            break;
+        case var:
+            printf("%c\n", root->val);
+            break;
+        case number:
+            printf("%d\n", root->val);
+            break;
+        }
+        Print(root->left, level + 1);
+    }
+}
+
 static void PrintNode(Node node)
 {
     switch (node->kind)
@@ -334,12 +368,16 @@ int main(int argc, char *argv[])
         sym = SGet();
         result = Expr();
         assert(sym == eof);
+        // Pre-in-post
+        printf("====== EXPRESSION ======\n");
         PreOrder(result);
         printf("\n");
         InOrder(result);
         printf("\n");
         PostOrder(result);
         printf("\n");
+        printf("====== TREE ======\n");
+        Print(result, 0);
     }
     else
     {
