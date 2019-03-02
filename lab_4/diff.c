@@ -33,6 +33,40 @@ typedef struct NodeDesc
     Node left, right; // plus, minus, times, divide: children
 } NodeDesc;
 
+static void Print(Node root, int level)
+{
+    register int i;
+
+    if (root != NULL)
+    {
+        Print(root->right, level + 1);
+        for (i = 0; i < level; i++)
+            printf(" ");
+        switch (root->kind)
+        {
+        case plus:
+            printf("+\n");
+            break;
+        case minus:
+            printf("-\n");
+            break;
+        case times:
+            printf("*\n");
+            break;
+        case divide:
+            printf("/\n");
+            break;
+        case var:
+            printf("%c\n", root->val);
+            break;
+        case number:
+            printf("%d\n", root->val);
+            break;
+        }
+        Print(root->left, level + 1);
+    }
+}
+
 static void PrintNode(Node node)
 {
     switch (node->kind)
@@ -165,14 +199,14 @@ static Node diff(Node root)
     {
         // shit load of nodes
         Node u, v, vl, vr, timesLeft, timesRight, subtract, square;
-        // d(u/v) = ((u'v)+(uv'))/(v*v)
+        // d(u/v) = ((u'v)-(uv'))/(v*v)
         // we first create u'v and v'u
         timesLeft = malloc(sizeof(NodeDesc));
         timesLeft->kind = times;
         timesLeft->left = diff(root->left);
         v = malloc(sizeof(NodeDesc));
         v = root->right;
-        timesLeft->right = u;
+        timesLeft->right = v;
         timesRight = malloc(sizeof(NodeDesc));
         timesRight->kind = times;
         u = malloc(sizeof(NodeDesc));
@@ -437,7 +471,8 @@ int main(int argc, char *argv[])
         InOrder(diffResult);
         printf("\n");
         PostOrder(diffResult);
-        printf("\n");
+        printf("\n=============\n");
+        Print(diffResult, 0);
     }
     else
     {

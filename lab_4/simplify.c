@@ -33,14 +33,13 @@ typedef struct NodeDesc
     Node left, right; // plus, minus, times, divide: children
 } NodeDesc;
 
-// Print Tree
-static void PrintTree(Node root, int level)
+static void Print(Node root, int level)
 {
     register int i;
 
     if (root != NULL)
     {
-        PrintTree(root->right, level + 1);
+        Print(root->right, level + 1);
         for (i = 0; i < level; i++)
             printf(" ");
         switch (root->kind)
@@ -57,14 +56,14 @@ static void PrintTree(Node root, int level)
         case divide:
             printf("/\n");
             break;
+        case var:
+            printf("%c\n", root->val);
+            break;
         case number:
             printf("%d\n", root->val);
             break;
-        case var:
-            printf("%c", root->val);
-            break;
         }
-        PrintTree(root->left, level + 1);
+        Print(root->left, level + 1);
     }
 }
 
@@ -73,22 +72,22 @@ static void PrintNode(Node node)
     switch (node->kind)
     {
     case plus:
-        printf("+");
+        printf("+ ");
         break;
     case minus:
-        printf("-");
+        printf("- ");
         break;
     case times:
-        printf("*");
+        printf("* ");
         break;
     case divide:
-        printf("/");
+        printf("/ ");
         break;
     case number:
-        printf("%d", node->val);
+        printf("%d ", node->val);
         break;
     case var:
-        printf("%c", node->val);
+        printf("%c ", node->val);
         break;
     }
 }
@@ -108,6 +107,10 @@ static void PreOrder(Node n)
 
 static void InOrder(Node n)
 {
+    if (n->kind != number && n->kind != var)
+    {
+        printf("( ");
+    }
     if (n->left != NULL)
     {
         InOrder(n->left);
@@ -116,6 +119,10 @@ static void InOrder(Node n)
     if (n->right != NULL)
     {
         InOrder(n->right);
+    }
+    if (n->kind != number && n->kind != var)
+    {
+        printf(") ");
     }
 }
 
@@ -192,14 +199,14 @@ static Node diff(Node root)
     {
         // shit load of nodes
         Node u, v, vl, vr, timesLeft, timesRight, subtract, square;
-        // d(u/v) = ((u'v)+(uv'))/(v*v)
+        // d(u/v) = ((u'v)-(uv'))/(v*v)
         // we first create u'v and v'u
         timesLeft = malloc(sizeof(NodeDesc));
         timesLeft->kind = times;
         timesLeft->left = diff(root->left);
         v = malloc(sizeof(NodeDesc));
         v = root->right;
-        timesLeft->right = u;
+        timesLeft->right = v;
         timesRight = malloc(sizeof(NodeDesc));
         timesRight->kind = times;
         u = malloc(sizeof(NodeDesc));
@@ -231,79 +238,84 @@ static Node diff(Node root)
 
 static void simplify(Node root)
 {
-    if (root != NULL)
+    if (root->left != NULL)
     {
         simplify(root->left);
+    }
+    if (root->right != NULL)
+    {
         simplify(root->right);
-        if (root->kind == times)
+    }
+    if (root->kind == times)
+    {
+        if (root->left->val == 0 || root->right->val == 0)
         {
-            if (root->left->val == 0)
-            {
-                root->kind = number;
-                root->val = 0;
-                root->left = NULL;
-                root->right = NULL;
-            }
-            else if (root->right->val == 0)
-            {
-                root->kind = number;
-                root->val = 0;
-                root->left = NULL;
-                root->right = NULL;
-            }
-            else if (root->left->val == 1)
-            {
-                root->kind = root->right->kind;
-                root->val = root->right->val;
-                root->left = root->right->left;
-                root->right = root->right->right;
-            }
-            else if (root->right->val == 1)
-            {
-                root->kind = root->left->kind;
-                root->val = root->left->kind;
-                root->left = root->left->left;
-                root->right = root->left->right;
-            }
+            root->kind = number;
+            root->val = 0;
+            root->left = NULL;
+            root->right = NULL;
         }
-        else if (root->kind == plus)
+        else if (root->left->val == 1)
         {
-            if (root->left->val == 0)
-            {
-                root->kind = root->right->kind;
-                root->val = root->right->val;
-                root->left = root->right->left;
-                root->right = root->right->right;
-            }
-            else if (root->right->val == 0)
-            {
-
-                root->kind = root->left->kind;
-                root->val = root->left->kind;
-                root->left = root->left->left;
-                root->right = root->left->right;
-            }
-            else if (root->left->kind == root->right->kind && root->left->val == root->right->val)
-            {
-                root->kind = times;
-                Node leftRoot;
-                leftRoot = malloc(sizeof(NodeDesc));
-                leftRoot->kind = number;
-                leftRoot->val = 2;
-                leftRoot->left = NULL;
-                leftRoot->right = NULL;
-                root->left = leftRoot;
-            }
+            root->kind = root->right->kind;
+            root->val = root->right->val;
+            root->left = root->right->left;
+            root->right = root->right->right;
         }
-        else if (root->kind == minus)
+        else if (root->right->val == 1)
         {
-            if (root->left->kind == root->right->kind && root->left->val == root->right->val)
-            {
-                root->kind = number;
-                root->val = 0;
-                root->left = NULL;
-                root->right = NULL;
-            }
+            root->kind = root->left->kind;
+            root->val = root->left->kind;
+            root->left = root->left->left;
+            root->right = root->left->right;
+        }
+    }
+    else if (root->kind == plus)
+    {
+        if (root->left->kind == number && root->left->val == 0)
+        {
+            root->kind = root->right->kind;
+            root->val = root->right->val;
+            Node old_left, old_right;
+            old_left = malloc(sizeof(NodeDesc));
+            old_right = malloc(sizeof(NodeDesc));
+            old_left = root->right->left;
+            old_right = root->right->right;
+            root->left = old_left;
+            root->right = old_right;
+        }
+        else if (root->right->kind == number && root->right->val == 0)
+        {
+            root->kind = root->left->kind;
+            root->val = root->left->val;
+            Node old_left, old_right;
+            old_left = malloc(sizeof(NodeDesc));
+            old_right = malloc(sizeof(NodeDesc));
+            old_left = root->left->left;
+            old_right = root->left->right;
+            root->left = old_left;
+            root->right = old_right;
+        }
+        else if (root->left->kind == root->right->kind && root->left->val == root->right->val)
+        {
+            Node leftRoot;
+            leftRoot = malloc(sizeof(NodeDesc));
+            leftRoot->kind = number;
+            leftRoot->val = 2;
+            leftRoot->left = NULL;
+            leftRoot->right = NULL;
+            root->kind = times;
+            root->left = leftRoot;
+        }
+    }
+    else if (root->kind == minus)
+    {
+        if (root->left->kind == root->right->kind && root->left->val == root->right->val)
+        {
+            root->kind = number;
+            root->val = 0;
+            root->left = NULL;
+            root->right = NULL;
         }
     }
 }
@@ -537,10 +549,37 @@ int main(int argc, char *argv[])
         sym = SGet();
         result = Expr();
         assert(sym == eof);
+        // Pre-in-post
+        printf("====== EXPRESSION ======\n");
+        PreOrder(result);
+        printf("\n");
+        InOrder(result);
+        printf("\n");
+        PostOrder(result);
+        printf("\n");
+        printf("====== TREE ======\n");
+        Print(result, 0);
+        printf("====== DERIVED EXPRESSION ======\n");
         diffResult = diff(result);
-        simplify(diffResult);
+        PreOrder(diffResult);
+        printf("\n");
         InOrder(diffResult);
         printf("\n");
+        PostOrder(diffResult);
+        printf("\n");
+        printf("====== DERIVED TREE ======\n");
+        Print(diffResult, 0);
+        // Simplify
+        simplify(diffResult);
+        printf("====== SIMPLIFIED DERIVED EXPRESSION ======\n");
+        PreOrder(diffResult);
+        printf("\n");
+        InOrder(diffResult);
+        printf("\n");
+        PostOrder(diffResult);
+        printf("\n");
+        printf("====== SIMPLIFIED DERIVED TREE ======\n");
+        Print(diffResult, 0);
     }
     else
     {
