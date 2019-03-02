@@ -38,22 +38,22 @@ static void PrintNode(Node node)
     switch (node->kind)
     {
     case plus:
-        printf("+");
+        printf("+ ");
         break;
     case minus:
-        printf("-");
+        printf("- ");
         break;
     case times:
-        printf("*");
+        printf("* ");
         break;
     case divide:
-        printf("/");
+        printf("/ ");
         break;
     case number:
-        printf("%d", node->val);
+        printf("%d ", node->val);
         break;
     case var:
-        printf("%c", node->val);
+        printf("%c ", node->val);
         break;
     }
 }
@@ -73,6 +73,10 @@ static void PreOrder(Node n)
 
 static void InOrder(Node n)
 {
+    if (n->kind != number && n->kind != var)
+    {
+        printf("( ");
+    }
     if (n->left != NULL)
     {
         InOrder(n->left);
@@ -81,6 +85,10 @@ static void InOrder(Node n)
     if (n->right != NULL)
     {
         InOrder(n->right);
+    }
+    if (n->kind != number && n->kind != var)
+    {
+        printf(") ");
     }
 }
 
@@ -327,9 +335,9 @@ int main(int argc, char *argv[])
         result = Expr();
         assert(sym == eof);
         PreOrder(result);
-        printf(" ");
+        printf("\n");
         InOrder(result);
-        printf(" ");
+        printf("\n");
         PostOrder(result);
         printf("\n");
     }
