@@ -1,0 +1,64 @@
+====== EXPRESSION ======
++ * 2 x * - 4 1 x 
+( ( 2 * x ) + ( ( 4 - 1 ) * x ) ) 
+2 x * 4 1 - x * + 
+====== TREE ======
+  x
+ *
+   1
+  -
+   4
++
+  x
+ *
+  2
+====== DERIVED EXPRESSION ======
++ + * 2 1 * 0 x + * - 4 1 1 * - 0 0 x 
+( ( ( 2 * 1 ) + ( 0 * x ) ) + ( ( ( 4 - 1 ) * 1 ) + ( ( 0 - 0 ) * x ) ) ) 
+2 1 * 0 x * + 4 1 - 1 * 0 0 - x * + + 
+====== DERIVED TREE ======
+   x
+  *
+    0
+   -
+    0
+ +
+   1
+  *
+    1
+   -
+    4
++
+   x
+  *
+   0
+ +
+   1
+  *
+   2
+Simplify 2*1
+	Multiplication by 1
+Simplify 0*120
+	Multiplication by 0
+Simplify 2+0
+	Plus by 0
+Simplify 4-1
+Simplify 0*1
+	Multiplication by 1
+Simplify 0-0
+	Minus by itself
+Simplify 0*120
+	Multiplication by 0
+Simplify 0+0
+	Plus by 0
+Simplify 2+0
+====== SIMPLIFIED DERIVED EXPRESSION ======
++ 2 - 4 1 
+( 2 + ( 4 - 1 ) ) 
+2 4 1 - + 
+====== SIMPLIFIED DERIVED TREE ======
+  1
+ -
+  4
++
+ 2

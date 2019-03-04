@@ -3,6 +3,7 @@
     Sirakorn Lamyai         5910500023
     Korrawit Chaikangwan    5910501909
 */
+#define DEBUG 0
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
@@ -248,32 +249,66 @@ static void simplify(Node root)
     }
     if (root->kind == times)
     {
-        if (root->left->val == 0 || root->right->val == 0)
+        if (DEBUG)
         {
+            printf("Simplify %d*%d\n", root->left->val, root->right->val);
+        }
+        if ((root->left->kind == number && root->left->val == 0) || (root->right->kind == number && root->right->val == 0))
+        {
+            if (DEBUG)
+            {
+                printf("\tMultiplication by 0\n");
+            }
             root->kind = number;
             root->val = 0;
             root->left = NULL;
             root->right = NULL;
         }
-        else if (root->left->val == 1)
+        else if (root->left->kind == number && root->left->val == 1)
         {
+            if (DEBUG)
+            {
+                printf("\tMultiplication by 1\n");
+            }
             root->kind = root->right->kind;
             root->val = root->right->val;
-            root->left = root->right->left;
-            root->right = root->right->right;
+            Node old_left, old_right;
+            old_left = malloc(sizeof(NodeDesc));
+            old_right = malloc(sizeof(NodeDesc));
+            old_left = root->right->left;
+            old_right = root->right->right;
+            root->left = old_left;
+            root->right = old_right;
         }
-        else if (root->right->val == 1)
+        else if (root->right->kind == number && root->right->val == 1)
         {
+            if (DEBUG)
+            {
+                printf("\tMultiplication by 1\n");
+            }
             root->kind = root->left->kind;
-            root->val = root->left->kind;
-            root->left = root->left->left;
-            root->right = root->left->right;
+            root->val = root->left->val;
+            Node old_left, old_right;
+            old_left = malloc(sizeof(NodeDesc));
+            old_right = malloc(sizeof(NodeDesc));
+            old_left = root->left->left;
+            old_right = root->left->right;
+            root->left = old_left;
+            root->right = old_right;
         }
     }
     else if (root->kind == plus)
     {
+        if (DEBUG)
+        {
+            printf("Simplify %d+%d\n", root->left->val, root->right->val);
+        }
         if (root->left->kind == number && root->left->val == 0)
         {
+            if (DEBUG)
+            {
+                printf("\tPlus by 0\n");
+            }
             root->kind = root->right->kind;
             root->val = root->right->val;
             Node old_left, old_right;
@@ -286,6 +321,10 @@ static void simplify(Node root)
         }
         else if (root->right->kind == number && root->right->val == 0)
         {
+            if (DEBUG)
+            {
+                printf("\tPlus by 0\n");
+            }
             root->kind = root->left->kind;
             root->val = root->left->val;
             Node old_left, old_right;
@@ -298,6 +337,10 @@ static void simplify(Node root)
         }
         else if (root->left->kind == root->right->kind && root->left->val == root->right->val)
         {
+            if (DEBUG)
+            {
+                printf("\tPlus by itself\n");
+            }
             Node leftRoot;
             leftRoot = malloc(sizeof(NodeDesc));
             leftRoot->kind = number;
@@ -310,8 +353,16 @@ static void simplify(Node root)
     }
     else if (root->kind == minus)
     {
+        if (DEBUG)
+        {
+            printf("Simplify %d-%d\n", root->left->val, root->right->val);
+        }
         if (root->left->kind == root->right->kind && root->left->val == root->right->val)
         {
+            if (DEBUG)
+            {
+                printf("\tMinus by itself\n");
+            }
             root->kind = number;
             root->val = 0;
             root->left = NULL;
@@ -570,6 +621,8 @@ int main(int argc, char *argv[])
         printf("====== DERIVED TREE ======\n");
         Print(diffResult, 0);
         // Simplify
+        simplify(diffResult);
+        simplify(diffResult);
         simplify(diffResult);
         printf("====== SIMPLIFIED DERIVED EXPRESSION ======\n");
         PreOrder(diffResult);
