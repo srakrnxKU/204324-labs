@@ -47,20 +47,13 @@ static int sym;
 // Factorisation (parenthesis)
 static void Paren()
 {
-    while (sym == 1 || sym == -1)
+    if (sym == 1)
     {
-        printf("Sym: %d\n", sym);
-        if (sym == 1)
-        {
-            sym = SGet();
-            printf("New paren() spawned\n");
-            Paren();
-        }
-        else
-        {
-            sym = SGet();
-            assert(sym == -1);
-        }
+        sym = SGet();
+        Paren();
+        assert(sym == -1);
+        sym = SGet();
+        Paren();
     }
 }
 
