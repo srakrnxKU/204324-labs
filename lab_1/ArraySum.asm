@@ -1,4 +1,3 @@
-
 .data # data section
 
 i: .space 4
