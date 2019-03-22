@@ -276,10 +276,9 @@ void codeProduce(Node root)
         switch (root->kind)
         {
         case plus:
-            fprintf(output, "    addiu    $sp, $sp, 4       # Adding: Pop upper value to $v1\n");
-            fprintf(output, "    lw       $v1, 0($sp)\n");
-            fprintf(output, "    addiu    $sp, $sp, 4       # Pop lower value to $a0\n");
-            fprintf(output, "    lw       $a0, 0($sp)\n");
+            fprintf(output, "    lw       $v1, 0($sp)       # Pop upper value\n");
+            fprintf(output, "    addiu    $sp, $sp, 4\n");
+            fprintf(output, "    lw       $a0, 0($sp)       # Pop lower value\n");
             fprintf(output, "    add      $a0, $a0, $v1     # $a0 = $a0 + $v1\n");
             fprintf(output, "    sw       $a0, 0($sp)       # Storing value back to stack\n");
             break;
@@ -315,11 +314,15 @@ int main(int argc, char *argv[])
         sym = SGet();
         result = Expr();
         output = fopen("mipseval.asm", "w+");
-        fputs(".text                          # text section", output);
+        fputs(".text                          # text section\n", output);
         fputs(".globl main                    # call main by SPIM\n", output);
         fputs("main:\n", output);
         codeProduce(result);
         assert(sym == eof);
+        fputs("    li $v0, 1                  # for printing an integer result\n", output);
+        fputs("    syscall                    # for printing an integer result\n", output);
+        fputs("    li $v0, 10                 # for correct exit (or termination)\n", output);
+        fputs("    syscall                    # for correct exit (or termination)\n", output);
         fclose(output);
     }
     else
