@@ -286,17 +286,32 @@ void codeProduce(Node root)
             fprintf(output, "    lw       $v1, 0($sp)       # Pop upper value\n");
             fprintf(output, "    addiu    $sp, $sp, 4\n");
             fprintf(output, "    lw       $a0, 0($sp)       # Pop lower value\n");
-            fprintf(output, "    sub      $a0, $a0, $v1     # $a0 = $a0 + $v1\n");
+            fprintf(output, "    sub      $a0, $a0, $v1     # $a0 = $a0 - $v1\n");
             fprintf(output, "    sw       $a0, 0($sp)       # Storing value back to stack\n");
             break;
         case times:
-            fputs("    times\n", output);
+            fprintf(output, "    lw       $v1, 0($sp)       # Pop upper value\n");
+            fprintf(output, "    addiu    $sp, $sp, 4\n");
+            fprintf(output, "    lw       $a0, 0($sp)       # Pop lower value\n");
+            fprintf(output, "    mult     $a0, $v1          # $a0 = $a0 * $v1\n");
+            fprintf(output, "    mflo     $a0\n");
+            fprintf(output, "    sw       $a0, 0($sp)       # Storing value back to stack\n");
             break;
         case divide:
-            fputs("    divide\n", output);
+            fprintf(output, "    lw       $v1, 0($sp)       # Pop upper value\n");
+            fprintf(output, "    addiu    $sp, $sp, 4\n");
+            fprintf(output, "    lw       $a0, 0($sp)       # Pop lower value\n");
+            fprintf(output, "    div      $a0, $v1          # $a0 = $a0 / $v1\n");
+            fprintf(output, "    mflo     $a0\n");
+            fprintf(output, "    sw       $a0, 0($sp)       # Storing value back to stack\n");
             break;
         case mod:
-            fputs("    mod\n", output);
+            fprintf(output, "    lw       $v1, 0($sp)       # Pop upper value\n");
+            fprintf(output, "    addiu    $sp, $sp, 4\n");
+            fprintf(output, "    lw       $a0, 0($sp)       # Pop lower value\n");
+            fprintf(output, "    div      $a0, $v1          # $a0 = $a0 %% $v1\n");
+            fprintf(output, "    mfhi     $a0\n");
+            fprintf(output, "    sw       $a0, 0($sp)       # Storing value back to stack\n");
             break;
         case number:
             fprintf(output, "    addiu    $sp, $sp, -4      # Store %d into stack \n", root->val);
