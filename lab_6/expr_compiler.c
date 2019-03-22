@@ -307,7 +307,7 @@ int main(int argc, char *argv[])
         SInit(argv[1]);
         sym = SGet();
         result = Expr();
-        output = fopen("stackmachine.asm", "w+");
+        output = fopen("mipseval.asm", "w+");
         codeProduce(result);
         assert(sym == eof);
         fclose(output);
