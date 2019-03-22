@@ -315,6 +315,9 @@ int main(int argc, char *argv[])
         sym = SGet();
         result = Expr();
         output = fopen("mipseval.asm", "w+");
+        fputs(".text                          # text section", output);
+        fputs(".globl main                    # call main by SPIM\n", output);
+        fputs("main:\n", output);
         codeProduce(result);
         assert(sym == eof);
         fclose(output);
