@@ -283,7 +283,11 @@ void codeProduce(Node root)
             fprintf(output, "    sw       $a0, 0($sp)       # Storing value back to stack\n");
             break;
         case minus:
-            fputs("    minus\n", output);
+            fprintf(output, "    lw       $v1, 0($sp)       # Pop upper value\n");
+            fprintf(output, "    addiu    $sp, $sp, 4\n");
+            fprintf(output, "    lw       $a0, 0($sp)       # Pop lower value\n");
+            fprintf(output, "    sub      $a0, $a0, $v1     # $a0 = $a0 + $v1\n");
+            fprintf(output, "    sw       $a0, 0($sp)       # Storing value back to stack\n");
             break;
         case times:
             fputs("    times\n", output);
