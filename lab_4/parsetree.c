@@ -1,5 +1,5 @@
 /*
-    PARSE TREE PROGRAMME FOR LAB 3
+    Expression Compiler for Lab.6
     Sirakorn Lamyai         5910500023
     Korrawit Chaikangwan    5910501909
 */
@@ -55,6 +55,9 @@ static void Print(Node root, int level)
             break;
         case divide:
             printf("/\n");
+            break;
+        case mod:
+            printf("%%\n");
             break;
         case number:
             printf("%d\n", root->val);

@@ -57,7 +57,7 @@ static void Print(Node root, int level)
             printf("/\n");
             break;
         case mod:
-            printf("%\n");
+            printf("%%\n");
             break;
         case number:
             printf("%d\n", root->val);
