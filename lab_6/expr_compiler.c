@@ -276,24 +276,29 @@ void codeProduce(Node root)
         switch (root->kind)
         {
         case plus:
-            fputs("add\n", output);
+            fprintf(output, "    addiu    $sp, $sp, 4       # Adding: Pop upper value to $v1\n");
+            fprintf(output, "    lw       $v1, 0($sp)\n");
+            fprintf(output, "    addiu    $sp, $sp, 4       # Pop lower value to $a0\n");
+            fprintf(output, "    lw       $a0, 0($sp)\n");
+            fprintf(output, "    add      $a0, $a0, $v1     # $a0 = $a0 + $v1\n");
+            fprintf(output, "    sw       $a0, 0($sp)       # Storing value back to stack\n");
             break;
         case minus:
-            fputs("minus\n", output);
+            fputs("    minus\n", output);
             break;
         case times:
-            fputs("times\n", output);
+            fputs("    times\n", output);
             break;
         case divide:
-            fputs("divide\n", output);
+            fputs("    divide\n", output);
             break;
         case mod:
-            fputs("mod\n", output);
+            fputs("    mod\n", output);
             break;
         case number:
-            fprintf(output, "addiu    $sp, $sp, -4      # Store %d into stack \n", root->val);
-            fprintf(output, "li       $a0, %d\n", root->val);
-            fprintf(output, "sw       $a0, 0($sp)\n");
+            fprintf(output, "    addiu    $sp, $sp, -4      # Store %d into stack \n", root->val);
+            fprintf(output, "    li       $a0, %d\n", root->val);
+            fprintf(output, "    sw       $a0, 0($sp)\n");
             break;
         }
     }
