@@ -266,6 +266,37 @@ static Node Expr()
     return result;
 }
 
+FILE *output;
+void codeProduce(Node root)
+{
+    if (root != NULL)
+    {
+        codeProduce(root->left);
+        codeProduce(root->right);
+        switch (root->kind)
+        {
+        case plus:
+            fputs("add\n", output);
+            break;
+        case minus:
+            fputs("minus\n", output);
+            break;
+        case times:
+            fputs("times\n", output);
+            break;
+        case divide:
+            fputs("divide\n", output);
+            break;
+        case mod:
+            fputs("mod\n", output);
+            break;
+        case number:
+            fprintf(output, "push\t%d\n", root->val);
+            break;
+        }
+    }
+}
+
 // Main function
 int main(int argc, char *argv[])
 {
@@ -276,8 +307,10 @@ int main(int argc, char *argv[])
         SInit(argv[1]);
         sym = SGet();
         result = Expr();
+        output = fopen("stackmachine.asm", "w+");
+        codeProduce(result);
         assert(sym == eof);
-        Print(result, 0);
+        fclose(output);
     }
     else
     {
