@@ -291,7 +291,9 @@ void codeProduce(Node root)
             fputs("mod\n", output);
             break;
         case number:
-            fprintf(output, "push\t%d\n", root->val);
+            fprintf(output, "addiu    $sp, $sp, -4      # Store %d into stack \n", root->val);
+            fprintf(output, "li       $a0, %d\n", root->val);
+            fprintf(output, "sw       $a0, 0($sp)\n");
             break;
         }
     }
