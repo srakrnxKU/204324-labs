@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "common_threads.h"
 #include "account_multithread.h"
+
+static struct timespec tim, tim2;
 
 void account_init(account_info *sp, int n)
 {
@@ -19,21 +22,28 @@ void account_init(account_info *sp, int n)
 
 void account_deposit(account_info *sp, int tid, int amount)
 {
+    int temp1, temp2;
+
     P(&sp[tid].mutex);
-    sp[tid].balance += amount;
+    temp1 = sp[tid].balance;
+    temp2 = amount + temp1;
+    nanosleep(&tim, &tim2);
+    sp[tid].balance = temp2;
     V(&sp[tid].mutex);
 }
 
 void account_withdraw(account_info *sp, int tid, int amount)
 {
-    int read_balance = 0;
+    int temp1, temp2;
     int done = 0;
     while (!done)
     {
         P(&sp[tid].mutex);
-        read_balance = sp[tid].balance;
-        if (read_balance > amount)
+        temp1 = sp[tid].balance;
+        temp2 = temp1 - amount;
+        if (temp1 > amount)
         {
+            nanosleep(&tim, &tim2);
             sp[tid].balance -= amount;
             done = 1;
         }
