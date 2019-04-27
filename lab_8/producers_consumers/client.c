@@ -3,58 +3,109 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <unistd.h>
 
 #include "common_threads.h"
-#include "sbuf.h"
+#include "smoker.h"
 
-sbuf_t *shared_data;
+table *Table;
 
-void *producer(void *arg)
+void *agent(void *arg)
 {
-    char *msg = arg;
-    int item = 1;
+    printf("Agent thread started.\n");
+    int obj;
+    srand((unsigned)time(NULL));
     while (1)
     {
-        sbuf_insert(shared_data, item, msg);
-        item++;
-        if (item == 6)
-            item = 1;
+        // Random an object
+        obj = rand() % 3;
+        switch (obj)
+        {
+        case 0:
+            printf("Agent places tobacco and paper\n");
+            V(&Table->match);
+            break;
+        case 1:
+            printf("Agent places tobacco and match\n");
+            V(&Table->paper);
+            break;
+        case 2:
+            printf("Agent places paper and match\n");
+            V(&Table->tobacco);
+            break;
+        }
+        usleep(100);
+        P(&Table->agent);
     }
-
     return NULL;
 }
 
-void *consumer(void *arg)
+void *match_skomer(void *arg)
 {
-    char *msg = arg;
-    int item;
+    printf("Match thread started.\n");
     while (1)
     {
-        item = sbuf_remove(shared_data, msg);
+        P(&Table->match);
+        P(&Table->table);
+        // Smoke
+        printf("Match smoker smokes\n");
+        usleep(100);
+        V(&Table->table);
+        V(&Table->agent);
     }
+    return NULL;
+}
 
+void *paper_skomer(void *arg)
+{
+    printf("Paper thread started.\n");
+    while (1)
+    {
+        P(&Table->paper);
+        P(&Table->table);
+        // Smoke
+        printf("Paper smoker smokes\n");
+        usleep(100);
+        V(&Table->table);
+        V(&Table->agent);
+    }
+    return NULL;
+}
+
+void *tobacco_smoker(void *arg)
+{
+    printf("Tobacco thread started.\n");
+    while (1)
+    {
+        P(&Table->tobacco);
+        P(&Table->table);
+        // Smoke
+        printf("Tobacco smoker smokes\n");
+        usleep(100);
+        V(&Table->table);
+        V(&Table->agent);
+    }
     return NULL;
 }
 
 int main(int argc, char *argv[])
 {
-
-    pthread_t p1, p2, p3, p4;
-
-    printf("size of sd = %lu\n", sizeof(sbuf_t));
-    shared_data = malloc(sizeof(sbuf_t));
-    if (shared_data == NULL)
+    Table = malloc(sizeof(table));
+    if (Table == NULL)
     {
-        fprintf(stderr, "Malloc unsuccessful\n");
-        exit(0);
+        printf("Memory allocation failed.\n");
+        return 0;
     }
-    // Initialize buffer of size 5
-    sbuf_init(shared_data, 5);
+    table_init(Table);
+    printf("Memory allocation for table completed.\n");
 
-    Pthread_create(&p1, NULL, consumer, "1");
-    Pthread_create(&p2, NULL, producer, "1");
-    Pthread_create(&p3, NULL, consumer, "2");
-    Pthread_create(&p4, NULL, producer, "2");
+    pthread_t p1,
+        p2, p3, p4;
+
+    Pthread_create(&p1, NULL, agent, 0);
+    Pthread_create(&p2, NULL, match_skomer, 0);
+    Pthread_create(&p3, NULL, paper_skomer, 0);
+    Pthread_create(&p4, NULL, tobacco_smoker, 0);
 
     // join waits for the threads to finish
     Pthread_join(p1, NULL);
