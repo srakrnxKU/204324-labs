@@ -34,14 +34,11 @@ void account_deposit(account_info *sp, int tid, int amount)
 
 void account_withdraw(account_info *sp, int tid, int amount)
 {
-    int temp1, temp2;
     int done = 0;
     while (!done)
     {
         P(&sp[tid].mutex);
-        temp1 = sp[tid].balance;
-        temp2 = temp1 - amount;
-        if (temp1 > amount)
+        if (sp[tid].balance > amount)
         {
             nanosleep(&tim, &tim2);
             sp[tid].balance -= amount;
