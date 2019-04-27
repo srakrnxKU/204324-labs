@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-#define INT_BALANCE 400000000
+#define INT_BALANCE 0
 #define ROUND 400000000
 
 typedef struct

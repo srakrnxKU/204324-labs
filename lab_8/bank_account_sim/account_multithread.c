@@ -26,12 +26,17 @@ void account_deposit(account_info *sp, int tid, int amount)
 
 void account_withdraw(account_info *sp, int tid, int amount)
 {
-    P(&sp[tid].mutex);
-    if (sp[tid].balance < amount)
+    int read_balance = 0;
+    int done = 0;
+    while (!done)
     {
-        //printf("Not enough funds to withdraw!\n");
-        return;
+        P(&sp[tid].mutex);
+        read_balance = sp[tid].balance;
+        if (read_balance > amount)
+        {
+            sp[tid].balance -= amount;
+            done = 1;
+        }
+        V(&sp[tid].mutex);
     }
-    sp[tid].balance -= amount;
-    V(&sp[tid].mutex);
 }
