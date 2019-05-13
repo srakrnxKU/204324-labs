@@ -16,6 +16,7 @@ bool seat = false;
 bool engine = false;
 bool roof = false;
 bool assemblyCompleted = false;
+int car = 1;
 
 void *a(void *arg)
 {
@@ -27,7 +28,7 @@ void *a(void *arg)
         }
         // add tire
         tire = true;
-        printf("A adds tire\n");
+        printf("A puts tires\n");
         sleep(1);
         // signal
         pthread_cond_signal(&readyForRoof);
@@ -39,7 +40,8 @@ void *a(void *arg)
         // as the assembly line is completed,
         // set all variables to false
         chassis = tire = seat = engine = roof = false;
-        printf("A paints\n");
+        printf("A paints\n\n");
+        car += 1;
         sleep(1);
         // signal
         pthread_cond_signal(&needChassis);
@@ -58,10 +60,11 @@ void *b(void *arg)
         }
         // add chassis
         chassis = true;
-        printf("B adds chassis\n");
+        printf("Car #%d\n", car);
+        printf("B puts chassis on the conveyor\n");
         sleep(1);
         // signal
-        pthread_cond_signal(&chassisReady);
+        pthread_cond_broadcast(&chassisReady);
     }
     return NULL;
 }
@@ -76,7 +79,7 @@ void *c(void *arg)
         }
         // add seat
         seat = true;
-        printf("C adds seats\n");
+        printf("C attaches seats\n");
         sleep(1);
         // signal
         pthread_cond_signal(&readyForRoof);
@@ -94,7 +97,7 @@ void *d(void *arg)
         }
         // add engine
         engine = true;
-        printf("D adds engine\n");
+        printf("D places engine\n");
         sleep(1);
         // signal
         pthread_cond_signal(&readyForRoof);
@@ -105,10 +108,10 @@ void *d(void *arg)
         }
         // add roof
         roof = true;
-        printf("D adds roof\n");
+        printf("D assembles top cover\n");
         sleep(1);
         // signal
-        pthread_cond_signal(&readyForRoof);
+        pthread_cond_signal(&readyForPaint);
     }
     return NULL;
 }
