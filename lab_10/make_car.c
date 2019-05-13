@@ -8,7 +8,6 @@ pthread_cond_t needChassis;
 pthread_cond_t chassisReady;
 pthread_cond_t readyForRoof;
 pthread_cond_t readyForPaint;
-pthread_cond_t readyForNewCar;
 
 bool chassis = false;
 bool tire = false;
@@ -123,7 +122,6 @@ int main()
     pthread_cond_init(&chassisReady, 0);
     pthread_cond_init(&readyForPaint, 0);
     pthread_cond_init(&readyForRoof, 0);
-    pthread_cond_init(&readyForNewCar, 0);
     pthread_t ta, tb, tc, td;
     pthread_create(&ta, NULL, a, NULL);
     pthread_create(&tb, NULL, b, NULL);
